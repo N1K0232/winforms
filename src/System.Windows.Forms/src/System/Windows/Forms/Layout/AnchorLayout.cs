@@ -173,6 +173,8 @@ namespace System.Windows.Forms.Layout
                 return control.Bounds;
             }
 
+            Debug.WriteLine($"\t\t'{control.Text}' evaluated for destinationt");
+
             int? x = control.Anchors!.Left;
             x ??= control.Bounds.Left;
             int width = control.Width;
@@ -742,6 +744,8 @@ namespace System.Windows.Forms.Layout
 
             static void ComputeAndUpdateAnchors(Control control)
             {
+                Debug.WriteLine($"\t\t'{control.Text}' computing anchors");
+
                 control.Anchors = null;
                 Rectangle displayRect = control.ParentInternal!.DisplayRectangle;
 

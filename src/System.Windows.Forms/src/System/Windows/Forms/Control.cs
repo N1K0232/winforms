@@ -3511,7 +3511,6 @@ namespace System.Windows.Forms
             set
             {
                 SetBounds(_x, _y, value.Width, value.Height, BoundsSpecified.Size);
-                UpdateAnchorsIfNeeded();
             }
         }
 
@@ -11008,6 +11007,7 @@ namespace System.Windows.Forms
                 _height != height)
             {
                 SetBoundsCore(x, y, width, height, specified);
+                UpdateAnchorsIfNeeded();
 
                 // WM_WINDOWPOSCHANGED will trickle down to an OnResize() which will
                 // have refreshed the interior layout or the resized control.  We only need to layout
