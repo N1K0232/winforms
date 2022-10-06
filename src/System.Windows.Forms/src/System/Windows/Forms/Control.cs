@@ -1914,6 +1914,8 @@ namespace System.Windows.Forms
 
         private static RightToLeft DefaultRightToLeft => RightToLeft.No;
 
+        public static int s_calcount;
+
         /// <summary>
         ///  Deriving classes can override this to configure a default size for their control.
         ///  This is more efficient than setting the size in the control's constructor.
@@ -3516,17 +3518,13 @@ namespace System.Windows.Forms
 
         private void UpdateAnchorsIfNeeded()
         {
-            if (!LocalAppContextSwitches.UseAnchorLayout || !CommonProperties.GetNeedsAnchorLayout(this))
-            {
-                return;
-            }
+            DefaultLayout.UpdateAnchorInfo(this);
 
-            LayoutEngine.UpdateAnchors(this);
-
+            /*
             foreach (Control child in Controls)
             {
                 LayoutEngine.InitLayout(child, BoundsSpecified.Size);
-            }
+            }*/
         }
 
         [SRCategory(nameof(SR.CatPropertyChanged))]
@@ -8027,10 +8025,7 @@ namespace System.Windows.Forms
         [EditorBrowsable(EditorBrowsableState.Advanced)]
         protected virtual void OnCreateControl()
         {
-            if(Anchors is null)
-            {
-                UpdateAnchorsIfNeeded();
-            }
+            UpdateAnchorsIfNeeded();
         }
 
         /// <summary>

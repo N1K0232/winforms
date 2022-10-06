@@ -353,6 +353,11 @@ namespace System.Windows.Forms.Layout
                 Debug.WriteLine($"\t\t'{element}' is anchored at {GetCachedBounds(element)}");
             }
 
+            if (LocalAppContextSwitches.UseAnchorLayout1)
+            {
+                return GetAnchorDestination1(element, displayRect, measureOnly);
+            }
+
             AnchorInfo layout = GetAnchorInfo(element);
 
             int left = layout.Left + displayRect.X;
@@ -488,7 +493,7 @@ namespace System.Windows.Forms.Layout
             for (int i = children.Count - 1; i >= 0; i--)
             {
                 IArrangedElement element = children[i];
-                if (CommonProperties.GetNeedsAnchorLayout(element))
+                if (CommonProperties.GetNeedsAnchorLayout(element) && IsReadyForNewAnchorLayout(element))
                 {
                     Debug.Assert(GetAnchorInfo(element) is not null, "AnchorInfo should be initialized before LayoutAnchorControls().");
                     SetCachedBounds(element, GetAnchorDestination(element, displayRectangle, /*measureOnly=*/false));
@@ -769,7 +774,7 @@ namespace System.Windows.Forms.Layout
                 preferredSizeForDocking = LayoutDockedControls(container, measureOnly);
             }
 
-            if (anchor && !measureOnly)
+            if (anchor && !measureOnly && IsReadyForNewAnchorLayout(container))
             {
                 // In the case of anchor, where we currently are defines the preferred size,
                 // so don't recalculate the positions of everything.
@@ -813,15 +818,13 @@ namespace System.Windows.Forms.Layout
             return CommonProperties.GetAutoSize(container);
         }
 
-        internal static void UpdateAnchors1(IArrangedElement element)
+        internal static void UpdateControlAnchors(Control control)
         {
-            if (element is Control control && control.IsHandleCreated)
+            Control parent = control.ParentInternal;
+            if (parent is not null && parent.IsHandleCreated)
             {
-                Control parent = control.ParentInternal;
-                if (parent is not null && parent.IsHandleCreated)
-                {
-                    ComputeAndUpdateAnchors(control);
-                }
+                Control.s_calcount++;
+                ComputeAndUpdateAnchors(control);
             }
 
             static void ComputeAndUpdateAnchors(Control control)
@@ -874,16 +877,35 @@ namespace System.Windows.Forms.Layout
             }
         }
 
+        private static bool IsReadyForNewAnchorLayout(IArrangedElement element)
+        {
+            if (LocalAppContextSwitches.UseAnchorLayout1)
+            {
+                return element is not Control control || control.IsHandleCreated;
+            }
+
+            return false;            
+        }
+
         /// <summary>
         ///  Updates the Anchor information based on the controls current bounds. This should only be called
         ///  when the parent control changes or the anchor mode changes.
         /// </summary>
-        private static void UpdateAnchorInfo(IArrangedElement element)
+        internal static void UpdateAnchorInfo(IArrangedElement element)
         {
             if (LocalAppContextSwitches.UseAnchorLayout1)
             {
-                UpdateAnchors1(element);
+                if (element is Control control && control.IsHandleCreated)
+                {
+                    UpdateControlAnchors((Control)element);
+                }
+
                 return;
+            }
+
+            if(element is Control)
+            {
+                Control.s_calcount++;
             }
 
             Debug.Assert(!HasCachedBounds(element.Container), "Do not call this method with an active cached bounds list.");
