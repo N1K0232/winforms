@@ -594,22 +594,6 @@ namespace System.Windows.Forms.Layout
                 "xSetAnchor did not set mode to Anchor.");
         }
 
-        internal static void xSetAnchors(IArrangedElement element, ControlAnchors? value)
-        {
-            throw new NotImplementedException();
-            /*
-            BitVector32 state = GetLayoutState(element);
-
-            // We translate DefaultAnchor to zero - see the _dockAndAnchorNeedsLayoutSection section above.
-            state[_dockAndAnchorSection] = 1;
-            state[_dockModeSection] = (int)DockAnchorMode.Anchor;
-
-            SetLayoutState(element, state);
-
-            Debug.Assert(GetLayoutState(element)[_dockModeSection] == (int)DockAnchorMode.Anchor,
-                "xSetAnchor did not set mode to Anchor.");*/
-        }
-
         ///  xSetDock
         ///  Do not use this.  Use DefaultLayout.SetDock.
         ///  Note that Dock and Anchor are exclusive, so we store their enums in the same section.

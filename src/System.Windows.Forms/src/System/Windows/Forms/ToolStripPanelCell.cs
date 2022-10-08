@@ -11,7 +11,6 @@ namespace System.Windows.Forms
     using System.Drawing;
     using System.Globalization;
     using System.Windows.Forms.Layout;
-    using System.Windows.Forms.Primitives;
 
     ///  this class is a container for toolstrips on a rafting row.
     ///  you can set layout styles on this container all day long and not
@@ -136,7 +135,7 @@ namespace System.Windows.Forms
 
         public override LayoutEngine LayoutEngine
         {
-            get { return LocalAppContextSwitches.UseAnchorLayout ? AnchorLayout.s_instance : DefaultLayout.Instance; }
+            get { return DefaultLayout.Instance; }
         }
 
         protected override IArrangedElement GetContainer()

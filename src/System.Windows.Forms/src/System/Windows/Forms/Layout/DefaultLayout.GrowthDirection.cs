@@ -7,7 +7,7 @@ namespace System.Windows.Forms.Layout
     internal partial class DefaultLayout
     {
         [Flags]
-        internal enum GrowthDirection
+        private enum GrowthDirection
         {
             None = 0,
             Upward = 0x01,

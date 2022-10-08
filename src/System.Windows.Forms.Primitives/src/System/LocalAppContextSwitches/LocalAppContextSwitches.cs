@@ -19,49 +19,13 @@ namespace System.Windows.Forms.Primitives
             get => GetCachedSwitchValue(ScaleTopLevelFormMinMaxSizeForDpiSwitchName, ref s_scaleTopLevelFormMinMaxSizeForDpi);
         }
 
-        private const string ImprovedAnchorLayout = "System.Windows.Forms.ImprovedAnchorLayout";
+        private const string ImprovedAnchorLayoutSwitchName = "System.Windows.Forms.ImprovedAnchorLayout";
 
         private static int s_ImprovedAnchorLayout;
-        public static bool OptImprovedAnchorLayout
+        public static bool ImprovedAnchorLayout
         {
             [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetCachedSwitchValue(ImprovedAnchorLayout, ref s_ImprovedAnchorLayout);
-        }
-
-        private const string ImprovedAnchorLayout1 = "System.Windows.Forms.ImprovedAnchorLayout1";
-
-        private static int s_ImprovedAnchorLayout1;
-        public static bool OptImprovedAnchorLayout1
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetCachedSwitchValue(ImprovedAnchorLayout1, ref s_ImprovedAnchorLayout1);
-        }
-
-        private const string ImprovedAnchorLayout2 = "System.Windows.Forms.ImprovedAnchorLayout2";
-
-        private static int s_ImprovedAnchorLayout2;
-        public static bool OptImprovedAnchorLayout2
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetCachedSwitchValue(ImprovedAnchorLayout2, ref s_ImprovedAnchorLayout2);
-        }
-
-        private const string AnchorLayoutString = "System.Windows.Forms.UseAnchorLayout";
-
-        private static int s_UseAnchorLayout;
-        public static bool UseAnchorLayout
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetCachedSwitchValue(AnchorLayoutString, ref s_UseAnchorLayout);
-        }
-
-        private const string AnchorLayoutString1 = "System.Windows.Forms.UseAnchorLayout1";
-
-        private static int s_UseAnchorLayout1;
-        public static bool UseAnchorLayout1
-        {
-            [MethodImpl(MethodImplOptions.AggressiveInlining)]
-            get => GetCachedSwitchValue(AnchorLayoutString1, ref s_UseAnchorLayout1);
+            get => GetCachedSwitchValue(ImprovedAnchorLayoutSwitchName, ref s_ImprovedAnchorLayout);
         }
 
         private static readonly FrameworkName? s_targetFrameworkName = GetTargetFrameworkName();

@@ -353,7 +353,7 @@ namespace System.Windows.Forms.Layout
                 Debug.WriteLine($"\t\t'{element}' is anchored at {GetCachedBounds(element)}");
             }
 
-            if (LocalAppContextSwitches.UseAnchorLayout1)
+            if (LocalAppContextSwitches.ImprovedAnchorLayout)
             {
                 return GetAnchorDestination1(element, displayRect, measureOnly);
             }
@@ -879,7 +879,7 @@ namespace System.Windows.Forms.Layout
 
         private static bool IsReadyForNewAnchorLayout(IArrangedElement element)
         {
-            if (LocalAppContextSwitches.UseAnchorLayout1)
+            if (LocalAppContextSwitches.ImprovedAnchorLayout)
             {
                 return element is not Control control || control.IsHandleCreated;
             }
@@ -893,7 +893,7 @@ namespace System.Windows.Forms.Layout
         /// </summary>
         internal static void UpdateAnchorInfo(IArrangedElement element)
         {
-            if (LocalAppContextSwitches.UseAnchorLayout1)
+            if (LocalAppContextSwitches.ImprovedAnchorLayout)
             {
                 if (element is Control control && control.IsHandleCreated)
                 {
@@ -1026,8 +1026,7 @@ namespace System.Windows.Forms.Layout
                     SetDock(element, DockStyle.None);
                 }
 
-                CommonProperties.xSetAnchor(element, value);
-                SetAnchorInfo(element, null);
+                CommonProperties.xSetAnchor(element, value);                
 
                 // Updating AnchorInfo is only needed when control is ready for layout. Oneway to check this precondition is to
                 // check if the control is parented. This helps avoid calculating AnchorInfo with default initial values of the Control.
@@ -1035,6 +1034,10 @@ namespace System.Windows.Forms.Layout
                 if (CommonProperties.GetNeedsAnchorLayout(element) && element is Control control && control.Parent is not null)
                 {
                     UpdateAnchorInfo(element);
+                }
+                else
+                {
+                    SetAnchorInfo(element, null);
                 }
 
                 if (element.Container is not null)
@@ -1053,18 +1056,6 @@ namespace System.Windows.Forms.Layout
                 }
             }
         }
-
-        /*
-        private bool AnchorInfoNeedsUpdate(IArrangedElement element)
-        {
-            if (CommonProperties.GetNeedsAnchorLayout(element) && element is Control control && control.Parent is not null)
-            {
-                if(LocalAppContextSwitches.UseAnchorLayout)
-                {
-                    if()
-                }
-            }
-        }*/
 
         public static DockStyle GetDock(IArrangedElement element) => CommonProperties.xGetDock(element);
 

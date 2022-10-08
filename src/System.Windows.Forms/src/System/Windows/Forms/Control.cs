@@ -16,7 +16,6 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms.Automation;
 using System.Windows.Forms.Layout;
-using System.Windows.Forms.Primitives;
 using Microsoft.Win32;
 using static Interop;
 using Encoding = System.Text.Encoding;
@@ -342,7 +341,6 @@ namespace System.Windows.Forms
 
         // Contains a collection of calculated fonts for various Dpi values of the control in the PerMonV2 mode.
         private Dictionary<int, Font>? _dpiFonts;
-        private ControlAnchors? _anchors;
 
 #if DEBUG
         internal int LayoutSuspendCount
@@ -765,24 +763,6 @@ namespace System.Windows.Forms
             set => DefaultLayout.SetAnchor(this, value);
         }
 
-        [Localizable(true)]
-        [SRDescription(nameof(SR.ControlAnchorDescr))]
-        [RefreshProperties(RefreshProperties.Repaint)]
-        public virtual ControlAnchors? Anchors
-        {
-            get => _anchors;
-            set => SetAnchors(value);
-        }
-
-        private void SetAnchors(ControlAnchors? value)
-        {
-            _anchors = value;
-         /*   if (LocalAppContextSwitches.UseAnchorLayout)
-            {
-                CommonProperties.xSetAnchors(this, value);
-            }*/
-        }
-
         [SRCategory(nameof(SR.CatLayout))]
         [RefreshProperties(RefreshProperties.All)]
         [Localizable(true)]
@@ -804,7 +784,7 @@ namespace System.Windows.Forms
                         // DefaultLayout does not keep anchor information until it needs to.  When
                         // AutoSize became a common property, we could no longer blindly call into
                         // DefaultLayout, so now we do a special InitLayout just for DefaultLayout.
-                        if (value && ParentInternal.LayoutEngine.IsDefaultEngine())
+                        if (value && ParentInternal.LayoutEngine == DefaultLayout.Instance)
                         {
                             ParentInternal.LayoutEngine.InitLayout(this, BoundsSpecified.Size);
                         }
@@ -861,7 +841,7 @@ namespace System.Windows.Forms
         // Public because this is interesting for ControlDesigners.
         [Browsable(false)]
         [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public virtual LayoutEngine LayoutEngine => LocalAppContextSwitches.UseAnchorLayout ? AnchorLayout.s_instance : DefaultLayout.Instance;
+        public virtual LayoutEngine LayoutEngine => DefaultLayout.Instance;
 
         /// <summary>
         ///  The GDI brush for our background color.
@@ -3510,10 +3490,7 @@ namespace System.Windows.Forms
         public Size Size
         {
             get => new Size(_width, _height);
-            set
-            {
-                SetBounds(_x, _y, value.Width, value.Height, BoundsSpecified.Size);
-            }
+            set => SetBounds(_x, _y, value.Width, value.Height, BoundsSpecified.Size);            
         }
 
         private void UpdateAnchorsIfNeeded()
@@ -4782,10 +4759,7 @@ namespace System.Windows.Forms
             SetState(States.CheckedHost, false);
             if (ParentInternal is not null)
             {
-               // if (!LocalAppContextSwitches.OptImprovedAnchorLayout || !ParentInternal.IsLayoutSuspended)
-                {
-                    ParentInternal.LayoutEngine.InitLayout(this, BoundsSpecified.All);
-                }
+                ParentInternal.LayoutEngine.InitLayout(this, BoundsSpecified.All);
             }
         }
 
@@ -8746,8 +8720,6 @@ namespace System.Windows.Forms
             }
         }
 
-        internal bool ResizeFromAnchors;
-
         /// <summary>
         ///  Raises the <see cref="Resize"/> event.
         /// </summary>
@@ -8759,24 +8731,6 @@ namespace System.Windows.Forms
             {
                 Invalidate();
             }
-
-            /*
-                        if (!DpiScaleInProgress)
-                        {
-                            foreach (Control child in Controls)
-                            {
-                                LayoutEngine.InitLayout(child, BoundsSpecified.Size);
-                            }
-                        }
-            */
-
-            /*                     if (LocalAppContextSwitches.OptImprovedAnchorLayout2 && Parent is null && TopLevelControl != this)
-                                 {
-                                     foreach (Control child in Controls)
-                                     {
-                                         LayoutEngine.InitLayout(child, BoundsSpecified.Size);
-                                     }
-                                 }*/
 
             LayoutTransaction.DoLayout(this, this, PropertyNames.Bounds);
             ((EventHandler?)Events[s_resizeEvent])?.Invoke(this, e);
@@ -10351,10 +10305,6 @@ namespace System.Windows.Forms
             but we break things at every step.
 
             */
-         /*   if (LocalAppContextSwitches.OptImprovedAnchorLayout1 && IsLayoutSuspended)
-            {
-                return;
-            }*/
 
             if (!performLayout)
             {
@@ -10742,17 +10692,10 @@ namespace System.Windows.Forms
             Size scaledSize = LayoutUtils.IntersectSizes(rawScaledBounds.Size, maximumSize);
             scaledSize = LayoutUtils.UnionSizes(scaledSize, minSize);
 
-            if (DpiHelper.IsScalingRequirementMet && (ParentInternal is not null) && (ParentInternal.LayoutEngine.IsDefaultEngine()))
+            if (DpiHelper.IsScalingRequirementMet && (ParentInternal is not null) && (ParentInternal.LayoutEngine == DefaultLayout.Instance))
             {
                 // We need to scale AnchorInfo to update distances to container edges
-                if (LocalAppContextSwitches.UseAnchorLayout)
-                {
-                    AnchorLayout.ScaleAnchorInfo(this, factor);
-                }
-                else
-                {
-                    DefaultLayout.ScaleAnchorInfo(this, factor);
-                }
+                DefaultLayout.ScaleAnchorInfo(this, factor);
             }
 
             // Set in the scaled bounds as constrained by the newly scaled min/max size.

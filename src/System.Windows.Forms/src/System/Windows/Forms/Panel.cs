@@ -80,7 +80,7 @@ namespace System.Windows.Forms
                         // DefaultLayout does not keep anchor information until it needs to. When
                         // AutoSize became a common property, we could no longer blindly call into
                         // DefaultLayout, so now we do a special InitLayout just for DefaultLayout.
-                        if (ParentInternal.LayoutEngine.IsDefaultEngine())
+                        if (ParentInternal.LayoutEngine == DefaultLayout.Instance)
                         {
                             ParentInternal.LayoutEngine.InitLayout(this, BoundsSpecified.Size);
                         }
