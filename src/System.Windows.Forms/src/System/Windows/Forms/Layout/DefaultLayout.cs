@@ -884,7 +884,7 @@ namespace System.Windows.Forms.Layout
                 return element is not Control control || control.IsHandleCreated;
             }
 
-            return false;            
+            return true;            
         }
 
         /// <summary>

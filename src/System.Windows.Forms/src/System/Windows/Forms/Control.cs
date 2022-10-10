@@ -16,6 +16,7 @@ using System.Runtime.InteropServices.ComTypes;
 using System.Text;
 using System.Windows.Forms.Automation;
 using System.Windows.Forms.Layout;
+using System.Windows.Forms.Primitives;
 using Microsoft.Win32;
 using static Interop;
 using Encoding = System.Text.Encoding;
@@ -3495,7 +3496,10 @@ namespace System.Windows.Forms
 
         private void UpdateAnchorsIfNeeded()
         {
-            DefaultLayout.UpdateAnchorInfo(this);
+            if (LocalAppContextSwitches.ImprovedAnchorLayout)
+            {
+                DefaultLayout.UpdateAnchorInfo(this);
+            }
 
             /*
             foreach (Control child in Controls)
